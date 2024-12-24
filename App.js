@@ -5,114 +5,102 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {SafeAreaView, View, Text, TextInput, ScrollView, Pressable, Switch, Keyboard, TouchableWithoutFeedback} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App = () => {
+    const [name, setNameValue] = useState('');
+    const [age, setAgeValue] = useState('');
+    const [displayName, setDisplayName] = useState('');
+    const [UserInfo, setUserInfo] = useState([]); //Array to store submitted value
+    const [showUserInfo, setShowUserInfo] = useState(true);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+    const handleSubmit = () => {
+        if (name.trim() && age.trim()) {
+            const newComponent = (
+                <Text key = {UserInfo.length} style = {{marginLeft : 10, marginTop : 10, fontFamily : 'Courier'}}>
+                {name.padEnd(20)} || {age.padStart(3)}
+                </Text>
+            );
+            setUserInfo([...UserInfo, newComponent]);
+            setNameValue(''); //clear input after submit
+            setAgeValue('');
+        }
+        Keyboard.dismiss();
+    };
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    return (
+    <TouchableWithoutFeedback onPress = {Keyboard.dismiss}>
+    <View style={{flex: 1}}>
+        <View style = {{flex: 1}}>
+        <Text style = {{marginTop : 10, marginLeft : 10}}>Name</Text>
+        <TextInput
+            style = {{borderWidth : 1,
+                      margin : 10,
+                      padding : 10,
+                      borderRadius :4}}
+            value = {name}
+            onChangeText = {value => {
+                setNameValue(value);
+            }}
+            autofocus = {true}
+            returnKeyType = {'next'}
+            placeholder = {"Your Name"}
+        />
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+        <Text style = {{marginTop : 5, marginLeft : 10}}>Age</Text>
+        <TextInput
+            style = {{borderWidth : 1,
+                      margin : 10,
+                      padding : 10,
+                      borderRadius :4}}
+            value = {age}
+            onChangeText = {value => {
+                setAgeValue(value);
+            }}
+            keyboardType = {'numeric'}
+            placeholder = {"Age"}
+        />
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+        <Pressable
+            style ={[{backgroundColor : 'blue', margin : 10},
+                      (name.length === 0 || age.length === 0) && {opacity : 0.5},
+            ]}
+            disabled = {name.length === 0 || age.length === 0}
+            onPress = {handleSubmit}
+        >
+        <Text
+            style = {{color : 'white',
+                      textAlign : 'center',
+                      padding : 10
+            }}>Submit</Text>
+        </Pressable>
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+        <View
+        style = {{flex: 2,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  position: 'absolute',
+                  paddingTop: 250,
+                 }}>
+            <Switch
+                    value = {showUserInfo}
+                    onValueChange = {(value) => setShowUserInfo(value)}
+            />
+            <Text>Show Information</Text>
+
+        </View>
+        {showUserInfo && (
+        <View style = {{flex: 3, paddingTop: 300, position: 'absolute'}}>
+            <ScrollView showsVerticalScrollIndicator = {false}>
+            {UserInfo}
+            </ScrollView>
+        </View>
+        )}
+    </View>
+    </TouchableWithoutFeedback>
+    );
+};
 
 export default App;
